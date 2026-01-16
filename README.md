@@ -4,13 +4,13 @@
   
   <p>
     Una suite moderna de análisis lingüístico y corrección de estilo potenciada por 
-    <strong>Google Gemini 1.5 Pro</strong> y envuelta en una interfaz <strong>FlatLaf Dark</strong>.
+    <strong>Google Gemini 3.0 Pro</strong> y envuelta en una interfaz <strong>FlatLaf Dark</strong>.
   </p>
 
   <p>
     <img src="https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" alt="Java"/>
     <img src="https://img.shields.io/badge/GUI-Swing%20%2B%20FlatLaf-2C2C2C?style=for-the-badge&logo=java&logoColor=orange" alt="Swing"/>
-    <img src="https://img.shields.io/badge/AI-Gemini%201.5%20Pro-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
+    <img src="https://img.shields.io/badge/AI-Gemini%203.0%20Pro-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Gemini"/>
     <img src="https://img.shields.io/badge/Status-Active-success?style=for-the-badge" alt="Status"/>
   </p>
 
