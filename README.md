@@ -16,7 +16,7 @@
 
   <br />
 
-  <img src="ruta/a/tu/captura_de_pantalla.png" alt="Dashboard Principal" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+  <img src="<img width="1919" height="1032" alt="Image" src="https://github.com/user-attachments/assets/68ce1cd3-87c8-4f99-966d-3e6235a12826" />" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
 
   <br /><br />
 </div>
