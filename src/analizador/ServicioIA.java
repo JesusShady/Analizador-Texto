@@ -8,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 
 public class ServicioIA {
 
-    private static final String API_KEY = "AIzaSyBxsjlfCts7ev6VVKMFKA_5GY4yRHWspr4";
+    private static final String API_KEY = "";
 
     private static final String API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=" + API_KEY;
 
