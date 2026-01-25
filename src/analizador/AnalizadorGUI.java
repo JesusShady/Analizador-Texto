@@ -115,7 +115,7 @@ public class AnalizadorGUI extends JFrame {
         areaTexto.setCaretColor(Color.WHITE);
         areaTexto.setFont(FUENTE_EDITOR);
         areaTexto.setMargin(MARGENES_EDITOR);
-        areaTexto.setLineWrap(false); // Code editors usually don't wrap by default
+        areaTexto.setLineWrap(false);
 
         areaNumeros = new JTextArea("1");
         areaNumeros.setBackground(COLOR_NUMEROS_BG);
@@ -127,19 +127,20 @@ public class AnalizadorGUI extends JFrame {
 
         JScrollPane scrollTexto = new JScrollPane(areaTexto);
         scrollTexto.setRowHeaderView(areaNumeros);
-        // FlatLaf hace los bordes del scrollpane muy limpios por defecto, quitamos null border
+
+        
         scrollTexto.setBorder(BorderFactory.createEmptyBorder()); 
 
         JPanel panelEditor = new JPanel(new BorderLayout());
-        // Borde titulado moderno
+        
         panelEditor.setBorder(BorderFactory.createTitledBorder(" Editor de Código "));
         panelEditor.add(scrollTexto, BorderLayout.CENTER);
 
         splitPane.setLeftComponent(panelEditor);
 
-        // --- PESTAÑAS (FlatLaf las estiliza automáticamente) ---
+        // --- PESTAÑAS ---
         pestañas = new JTabbedPane();
-        // Propiedad especial de FlatLaf para pestañas estilo "underline" o "card"
+
         pestañas.putClientProperty("JTabbedPane.tabType", "card"); 
         
         areaResultadosGeneral = new JTextArea();
@@ -182,35 +183,31 @@ public class AnalizadorGUI extends JFrame {
 
     // --- MÉTODOS AUXILIARES ---
 
-    /**
-     * Crea un botón con estilo moderno FlatLaf.
-     * Si bg/fg son null, usa los colores por defecto del tema.
-     */
+  
     private JButton crearBoton(String txt, Color bg, Color fg) {
         JButton btn = new JButton(txt);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         
-        // Si pasamos colores específicos (para acciones principales)
+        
         if (bg != null) {
             btn.setBackground(bg);
             btn.setForeground(fg != null ? fg : Color.WHITE);
-            // Esto quita el borde del sistema y deja el color plano
+            
             btn.setBorderPainted(false); 
         }
         
-        // Estilo FlatLaf: Botones redondeados
+        
         btn.putClientProperty("JButton.buttonType", "roundRect"); 
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Margen interno cómodo
+        
         btn.setMargin(new Insets(6, 15, 6, 15));
         
         return btn;
     }
 
     private void configurarTextAreaResultados(JTextArea ta) {
-        // Usamos colores nulos para que herede el tema oscuro de FlatLaf en paneles de lectura,
-        // o mantenemos oscuro explícito si prefieres contraste.
+        
         ta.setBackground(new Color(40, 40, 40)); 
         ta.setForeground(new Color(220, 220, 220));
         ta.setEditable(false);
@@ -218,7 +215,7 @@ public class AnalizadorGUI extends JFrame {
         ta.setMargin(new Insets(15, 15, 15, 15));
     }
 
-    // --- LOGICA ORIGINAL (Sin cambios drásticos) ---
+    // --- LOGICA ---
 
     private void guardarReporte() {
         try {
@@ -303,7 +300,7 @@ public class AnalizadorGUI extends JFrame {
     }
 
     private void ejecutarAnalisis() {
-        // NOTA: Asumimos que la clase AnalizadorLogica existe y funciona como en tu código original.
+
         try {
             if(areaTexto == null) return;
             String texto = areaTexto.getText();
@@ -318,15 +315,13 @@ public class AnalizadorGUI extends JFrame {
             sb.append("Total Palabras: ").append(logica.getTotalPalabras()).append("\n");
             sb.append("Total Caracteres: ").append(logica.getTotalCaracteres()).append("\n");
             sb.append("Total Líneas: ").append(logica.getTotalLineas()).append("\n");
-            // ... (Resto de tu lógica de reporte) ...
-            
-            // Simulación básica para que compile si no tienes la lógica completa a mano
+          
             sb.append("\n(Análisis completo generado correctamente)");
 
             areaResultadosGeneral.setText(sb.toString());
             areaResultadosGeneral.setCaretPosition(0);
 
-            // Frecuencia
+        
             StringBuilder sbFreq = new StringBuilder();
             sbFreq.append("LETRA\tFRECUENCIA\n");
             logica.getFrecuenciaLetras().entrySet().stream()
@@ -362,80 +357,215 @@ public class AnalizadorGUI extends JFrame {
     }
 
     private void abrirPanelIA() {
-        // Creamos un diálogo no modal (puedes seguir editando atrás)
-        JDialog dialogoIA = new JDialog(this, "Copiloto de Redacción", false);
-        dialogoIA.setSize(400, 500);
-        dialogoIA.setLayout(new BorderLayout());
-        
-        // Área del chat
-        JTextArea areaChat = new JTextArea();
-        areaChat.setEditable(false);
-        areaChat.setLineWrap(true);
-        areaChat.setWrapStyleWord(true);
-        areaChat.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-        areaChat.setBackground(new Color(45, 48, 55)); // Fondo oscuro chat
-        areaChat.setForeground(Color.WHITE);
-        areaChat.setMargin(new Insets(10, 10, 10, 10));
-        areaChat.setText("🤖 Hola. Soy tu asistente. \n¿Qué quieres hacer con el texto? (Ej: 'Resume esto', 'Corrige la gramática', 'Hazlo más formal')\n\n");
+    JDialog dialogoIA = new JDialog(this, "Copiloto de Redacción", false);
+    dialogoIA.setSize(500, 600);
+    dialogoIA.setLayout(new BorderLayout());
 
-        // Input del usuario
-        JTextField txtInput = new JTextField();
-        txtInput.putClientProperty("JTextField.placeholderText", "Escribe tu instrucción aquí...");
-        
-        JButton btnEnviar = new JButton("Enviar");
-        btnEnviar.setBackground(new Color(138, 43, 226));
-        btnEnviar.setForeground(Color.WHITE);
-        
-        JPanel panelInput = new JPanel(new BorderLayout(5, 5));
-        panelInput.setBorder(new EmptyBorder(10, 10, 10, 10));
-        panelInput.add(txtInput, BorderLayout.CENTER);
-        panelInput.add(btnEnviar, BorderLayout.EAST);
+    // --- 1. CONFIGURACIÓN DEL CHAT (Igual que antes) ---
+    JEditorPane areaChat = new JEditorPane();
+    areaChat.setContentType("text/html");
+    areaChat.setEditable(false);
+    areaChat.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+    areaChat.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
+    areaChat.setBackground(new Color(45, 48, 55));
+    
+    String estiloCSS = "<style>"
+            + "body { font-family: 'Segoe UI Emoji', sans-serif; font-size: 14px; color: #E0E0E0; margin: 10px; }"
+            + ".user { color: #FFFFFF; font-weight: bold; margin-top: 10px; }"
+            + ".gemini { color: #FFD700; font-weight: bold; margin-top: 10px; }"
+            + ".msg { margin-bottom: 5px; }"
+            + "</style>";
 
-        // Lógica de envío
-        Runnable accionEnviar = () -> {
-            String pregunta = txtInput.getText().trim();
-            if (pregunta.isEmpty()) return;
+    StringBuilder historialHtml = new StringBuilder();
+    historialHtml.append("<html><head>").append(estiloCSS).append("</head><body>");
+    historialHtml.append("<div class='gemini'>🤖 ASISTENTE:</div>")
+                 .append("<div class='msg'>Hola. Pídeme que <b>reescriba</b> o <b>corrija</b> el texto y usa el botón 'Aplicar' para llevarlo al editor.</div>");
+    
+    areaChat.setText(historialHtml.toString() + "</body></html>");
+
+    // --- 2. CONTROLES INFERIORES ---
+    JTextField txtInput = new JTextField();
+    txtInput.putClientProperty("JTextField.placeholderText", "Ej: Corrígelo y dame el código completo...");
+
+    JButton btnEnviar = new JButton("Enviar");
+    btnEnviar.setBackground(new Color(138, 43, 226)); // Morado
+    btnEnviar.setForeground(Color.WHITE);
+
+    // NUEVO BOTÓN: APLICAR
+    JButton btnAplicar = new JButton("Aplicar al Editor");
+    btnAplicar.setBackground(new Color(40, 167, 69)); // Verde
+    btnAplicar.setForeground(Color.WHITE);
+    btnAplicar.setEnabled(false); // Desactivado hasta que la IA responda algo útil
+
+    JPanel panelInput = new JPanel(new BorderLayout(5, 5));
+    panelInput.setBorder(new EmptyBorder(10, 10, 10, 10));
+    panelInput.add(txtInput, BorderLayout.CENTER);
+    
+    // Panel para los dos botones
+    JPanel panelBotones = new JPanel(new GridLayout(1, 2, 5, 0));
+    panelBotones.add(btnEnviar);
+    panelBotones.add(btnAplicar);
+    panelInput.add(panelBotones, BorderLayout.EAST);
+
+    // Variable para guardar la respuesta "cruda" de la IA (para poder pegarla limpia)
+    // Usamos un array de 1 posición para poder modificarla desde dentro del Thread (truco de Java)
+    final String[] ultimaRespuestaIA = { "" };
+
+    // --- 3. LÓGICA DE ENVÍO ---
+    Runnable accionEnviar = () -> {
+        String pregunta = txtInput.getText().trim();
+        if (pregunta.isEmpty()) return;
+
+        historialHtml.append("<div class='user'>👤 TÚ:</div>")
+                     .append("<div class='msg'>").append(convertirMarkdownAHtml(pregunta)).append("</div>");
+        areaChat.setText(historialHtml.toString() + "</body></html>");
+
+        txtInput.setText("");
+        txtInput.setEnabled(false);
+        btnEnviar.setEnabled(false);
+        btnAplicar.setEnabled(false); // Bloquear mientras piensa
+        
+        SwingUtilities.invokeLater(() -> areaChat.setCaretPosition(areaChat.getDocument().getLength()));
+
+        new Thread(() -> {
+    String textoActual = areaTexto.getText();
+    
+    //prompt para evitar que responda en multiples opciones
+    String promptDeSistema = """
+            ACTÚA COMO UN MOTOR DE REFACTORIZACIÓN DE CÓDIGO Y TEXTO.
+            Tu única función es recibir un texto y una instrucción, y devolver el texto transformado.
             
-            areaChat.append("\n👤 TÚ: " + pregunta + "\n");
-            txtInput.setText("");
-            txtInput.setEnabled(false);
-            btnEnviar.setEnabled(false);
+            REGLAS OBLIGATORIAS:
+            1. NO saludes, NO expliques, NO converses.
+            2. Tu respuesta debe contener ÚNICAMENTE el resultado final.
+            3. Envuelve SIEMPRE el resultado completo en un bloque de código Markdown (```).
+            4. Si la instrucción pide corregir, devuelve TODO el texto corregido, no solo las partes cambiadas.
             
-            // Usamos un hilo secundario para no congelar la UI mientras piensa
-            new Thread(() -> {
-                String textoActual = areaTexto.getText();
-                // CAMBIO AQUÍ: Llamamos a consultarGemini
-                String respuesta = servicioIA.consultarGemini(pregunta, textoActual);
-                
-                SwingUtilities.invokeLater(() -> {
-                    areaChat.append("✨ GEMINI: " + respuesta + "\n\n"); // Cambié el nombre a Gemini
-                    areaChat.setCaretPosition(areaChat.getDocument().getLength());
-                    txtInput.setEnabled(true);
-                    btnEnviar.setEnabled(true);
-                    txtInput.requestFocus();
-                });
-            }).start();
-        };
+            Instrucción del usuario: %s
+            """;
+    
+    // Inyectamos la instrucción del usuario dentro de nuestras reglas rígidas
+    String promptFinal = String.format(promptDeSistema, pregunta);
+    
+    // Enviamos el prompt "trucado" a la IA, pero el usuario solo vio su pregunta original
+    String respuesta = servicioIA.consultarGemini(promptFinal, textoActual);
+    
+    // Guardamos la respuesta cruda para el botón Aplicar
+    ultimaRespuestaIA[0] = respuesta;
 
-        btnEnviar.addActionListener(e -> accionEnviar.run());
-        txtInput.addActionListener(e -> accionEnviar.run()); // Enter para enviar
+    SwingUtilities.invokeLater(() -> {
+        // Convertimos a HTML para que se vea bonito en el chat
+        String respuestaHtml = convertirMarkdownAHtml(respuesta);
 
-        dialogoIA.add(new JScrollPane(areaChat), BorderLayout.CENTER);
-        dialogoIA.add(panelInput, BorderLayout.SOUTH);
+        // Si la IA obedeció y mandó solo código, agregamos un mensajito visual para el usuario
+        // para que no se vea tan "seco" en el chat, aunque el botón Aplicar usará el código limpio.
+        if (!respuestaHtml.contains("Hola") && !respuestaHtml.contains("Aquí")) {
+             respuestaHtml = "<i>(Código generado listo para aplicar)</i><br>" + respuestaHtml;
+        }
+
+        historialHtml.append("<div class='gemini'>✨ GEMINI:</div>")
+                     .append("<div class='msg'>").append(respuestaHtml).append("</div>");
+
+        areaChat.setText(historialHtml.toString() + "</body></html>");
         
-        // Posicionar a la derecha de la ventana principal
-        dialogoIA.setLocation(this.getX() + this.getWidth() - 420, this.getY() + 50);
-        dialogoIA.setVisible(true);
+        txtInput.setEnabled(true);
+        btnEnviar.setEnabled(true);
+        btnAplicar.setEnabled(true); 
+        txtInput.requestFocus();
+        areaChat.setCaretPosition(areaChat.getDocument().getLength());
+    });
+    }).start();
+    };
+
+    // --- 4. LÓGICA DEL BOTÓN APLICAR ---
+    btnAplicar.addActionListener(e -> {
+        String textoIA = ultimaRespuestaIA[0];
+        if (textoIA == null || textoIA.isEmpty()) return;
+
+        int confirm = JOptionPane.showConfirmDialog(dialogoIA, 
+            "Esto reemplazará TODO el contenido del editor principal con la respuesta de la IA.\n¿Estás seguro?",
+            "Confirmar reemplazo", JOptionPane.YES_NO_OPTION);
+        
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Intentar extraer solo el código si viene en formato Markdown (``` ... ```)
+            String textoLimpio = extraerContenidoCodigo(textoIA);
+            
+            areaTexto.setText(textoLimpio);
+            actualizarNumerosLinea(); // Actualizar interfaz
+            ejecutarAnalisis();       // Re-analizar automáticamente
+            dialogoIA.dispose();      // Cerrar ventana de IA (opcional)
+        }
+    });
+
+    btnEnviar.addActionListener(e -> accionEnviar.run());
+    txtInput.addActionListener(e -> accionEnviar.run());
+
+    dialogoIA.add(new JScrollPane(areaChat), BorderLayout.CENTER);
+    dialogoIA.add(panelInput, BorderLayout.SOUTH);
+    dialogoIA.setLocationRelativeTo(this);
+    dialogoIA.setVisible(true);
+}
+
+    private String escapeHtml(String s){
+        if(s == null) return "";
+        return s.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+                .replace("\"", "&quot;")
+                .replace("'", "&#39;");
     }
+
+    private String convertirMarkdownAHtml(String texto) {
+    if (texto == null) return "";
+    
+    // 1. Escapar HTML propio del texto para evitar inyecciones, 
+    // pero manteniendo los saltos de línea para procesarlos después
+    String html = texto.replace("&", "&amp;")
+                       .replace("<", "&lt;")
+                       .replace(">", "&gt;");
+
+    // 2. Convertir Negritas: **texto** -> <b>texto</b>
+    html = html.replaceAll("\\*\\*(.*?)\\*\\*", "<b>$1</b>");
+
+    // 3. Convertir Títulos: ### Texto -> <h3>Texto</h3>
+    html = html.replaceAll("### (.*?)(?:\\n|$)", "<h3>$1</h3>");
+
+    // 4. Convertir Listas con viñetas: * Texto -> • Texto
+    html = html.replaceAll("(?m)^\\* (.*)$", "&bull; $1");
+
+    // 5. Convertir Listas numéricas (simple): 1. Texto -> <b>1.</b> Texto
+    // Esto ayuda a que los números resalten
+    html = html.replaceAll("(?m)^(\\d+\\.) (.*)$", "<b>$1</b> $2");
+
+    // 6. Finalmente, convertir saltos de línea a <br>
+    html = html.replace("\n", "<br>");
+
+    return html;
+ }
+
+    private String extraerContenidoCodigo(String textoBruto) {
+    // Patrón para buscar contenido entre tres comillas invertidas ```
+    // Pattern.DOTALL permite que el punto (.) incluya saltos de línea
+    Pattern pattern = Pattern.compile("```(?:\\w*\\n)?(.*?)```", Pattern.DOTALL);
+    Matcher matcher = pattern.matcher(textoBruto);
+
+    if (matcher.find()) {
+        // Si encuentra un bloque de código, devuelve SOLO lo de adentro
+        return matcher.group(1).trim(); 
+    }
+    
+    // Si no hay bloques de código, devuelve el texto completo (asumiendo que es puro texto)
+    return textoBruto;
+}
 
     // --- MAIN ---
     public static void main(String[] args) {
         // CONFIGURACIÓN DE FLATLAF
         try {
-            // Setup del tema Darcula (Oscuro moderno)
+          
             FlatDarculaLaf.setup();
             
-            // Opcional: Redondear componentes globalmente
+            
             UIManager.put("Button.arc", 15);
             UIManager.put("Component.arc", 10);
             
@@ -443,10 +573,10 @@ public class AnalizadorGUI extends JFrame {
             System.err.println("No se pudo iniciar FlatLaf");
         }
         
-        // Iniciar la ventana
+        
         SwingUtilities.invokeLater(() -> {
             AnalizadorGUI frame = new AnalizadorGUI();
-            // Decoraciones personalizadas de ventana (Barra de título oscura integrada)
+            
             frame.setDefaultLookAndFeelDecorated(true);
             frame.setVisible(true);
         });
