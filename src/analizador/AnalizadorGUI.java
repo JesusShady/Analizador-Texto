@@ -361,7 +361,7 @@ public class AnalizadorGUI extends JFrame {
     dialogoIA.setSize(500, 600);
     dialogoIA.setLayout(new BorderLayout());
 
-    // --- 1. CONFIGURACIÓN DEL CHAT (Igual que antes) ---
+    // --- CONFIGURACION DEL CHAT ---
     JEditorPane areaChat = new JEditorPane();
     areaChat.setContentType("text/html");
     areaChat.setEditable(false);
@@ -383,7 +383,7 @@ public class AnalizadorGUI extends JFrame {
     
     areaChat.setText(historialHtml.toString() + "</body></html>");
 
-    // --- 2. CONTROLES INFERIORES ---
+    // CONTROLES INFERIORES ---
     JTextField txtInput = new JTextField();
     txtInput.putClientProperty("JTextField.placeholderText", "Ej: Corrígelo y dame el código completo...");
 
@@ -395,7 +395,7 @@ public class AnalizadorGUI extends JFrame {
     JButton btnAplicar = new JButton("Aplicar al Editor");
     btnAplicar.setBackground(new Color(40, 167, 69)); // Verde
     btnAplicar.setForeground(Color.WHITE);
-    btnAplicar.setEnabled(false); // Desactivado hasta que la IA responda algo útil
+    btnAplicar.setEnabled(false);
 
     JPanel panelInput = new JPanel(new BorderLayout(5, 5));
     panelInput.setBorder(new EmptyBorder(10, 10, 10, 10));
@@ -407,11 +407,10 @@ public class AnalizadorGUI extends JFrame {
     panelBotones.add(btnAplicar);
     panelInput.add(panelBotones, BorderLayout.EAST);
 
-    // Variable para guardar la respuesta "cruda" de la IA (para poder pegarla limpia)
-    // Usamos un array de 1 posición para poder modificarla desde dentro del Thread (truco de Java)
+  
     final String[] ultimaRespuestaIA = { "" };
 
-    // --- 3. LÓGICA DE ENVÍO ---
+    //LÓGICA DE ENVÍO ---
     Runnable accionEnviar = () -> {
         String pregunta = txtInput.getText().trim();
         if (pregunta.isEmpty()) return;
@@ -454,11 +453,11 @@ public class AnalizadorGUI extends JFrame {
     ultimaRespuestaIA[0] = respuesta;
 
     SwingUtilities.invokeLater(() -> {
+
         // Convertimos a HTML para que se vea bonito en el chat
         String respuestaHtml = convertirMarkdownAHtml(respuesta);
 
-        // Si la IA obedeció y mandó solo código, agregamos un mensajito visual para el usuario
-        // para que no se vea tan "seco" en el chat, aunque el botón Aplicar usará el código limpio.
+       
         if (!respuestaHtml.contains("Hola") && !respuestaHtml.contains("Aquí")) {
              respuestaHtml = "<i>(Código generado listo para aplicar)</i><br>" + respuestaHtml;
         }
@@ -477,7 +476,7 @@ public class AnalizadorGUI extends JFrame {
     }).start();
     };
 
-    // --- 4. LÓGICA DEL BOTÓN APLICAR ---
+    // --- LÓGICA DEL BOTÓN APLICAR ---
     btnAplicar.addActionListener(e -> {
         String textoIA = ultimaRespuestaIA[0];
         if (textoIA == null || textoIA.isEmpty()) return;
@@ -487,13 +486,13 @@ public class AnalizadorGUI extends JFrame {
             "Confirmar reemplazo", JOptionPane.YES_NO_OPTION);
         
         if (confirm == JOptionPane.YES_OPTION) {
-            // Intentar extraer solo el código si viene en formato Markdown (``` ... ```)
+          
             String textoLimpio = extraerContenidoCodigo(textoIA);
             
             areaTexto.setText(textoLimpio);
-            actualizarNumerosLinea(); // Actualizar interfaz
-            ejecutarAnalisis();       // Re-analizar automáticamente
-            dialogoIA.dispose();      // Cerrar ventana de IA (opcional)
+            actualizarNumerosLinea(); 
+            ejecutarAnalisis();     
+            dialogoIA.dispose();     
         }
     });
 
@@ -506,14 +505,14 @@ public class AnalizadorGUI extends JFrame {
     dialogoIA.setVisible(true);
 }
 
-    private String escapeHtml(String s){
-        if(s == null) return "";
-        return s.replace("&", "&amp;")
-                .replace("<", "&lt;")
-                .replace(">", "&gt;")
-                .replace("\"", "&quot;")
-                .replace("'", "&#39;");
-    }
+    // private String escapeHtml(String s){
+    //     if(s == null) return "";
+    //     return s.replace("&", "&amp;")
+    //             .replace("<", "&lt;")
+    //             .replace(">", "&gt;")
+    //             .replace("\"", "&quot;")
+    //             .replace("'", "&#39;");
+    // }
 
     private String convertirMarkdownAHtml(String texto) {
     if (texto == null) return "";
