@@ -13,7 +13,7 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import java.awt.*;
 import java.io.*;
-import java.net.URI;
+//import java.net.URI;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,7 +70,7 @@ public class AnalizadorGUI extends JFrame {
         
         JButton btnCopiar = crearBoton("Copiar", null, null);
         JButton btnPegar = crearBoton("Pegar", null, null);
-        JButton btnOrtografia = crearBoton("Corregir (Web)", null, null);
+        //JButton btnOrtografia = crearBoton("Corregir (Web)", null, null);
         JButton btnGuia = crearBoton("Guía", BTN_INFO_BG, Color.WHITE);
 
         JLabel lblBuscar = new JLabel("Buscar:");
@@ -160,7 +160,7 @@ public class AnalizadorGUI extends JFrame {
         btnLimpiar.addActionListener(e -> limpiarTodo());
         btnCargar.addActionListener(e -> cargarArchivo());
         btnBuscar.addActionListener(e -> ejecutarBusquedaSegura());
-        btnOrtografia.addActionListener(e -> abrirCorrectorWeb());
+        //btnOrtografia.addActionListener(e -> abrirCorrectorWeb());
         btnGuia.addActionListener(e -> mostrarGuiaUso());
         btnIA.addActionListener(e -> abrirPanelIA());
 
@@ -183,7 +183,6 @@ public class AnalizadorGUI extends JFrame {
 
     // --- MÉTODOS AUXILIARES ---
 
-  
     private JButton crearBoton(String txt, Color bg, Color fg) {
         JButton btn = new JButton(txt);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -216,7 +215,6 @@ public class AnalizadorGUI extends JFrame {
     }
 
     // --- LOGICA ---
-
     private void guardarReporte() {
         try {
             if (areaResultadosGeneral.getText().trim().isEmpty()) {
@@ -295,41 +293,99 @@ public class AnalizadorGUI extends JFrame {
         JOptionPane.showMessageDialog(this, new JScrollPane(areaGuia), "Ayuda", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void abrirCorrectorWeb() {
-        try { Desktop.getDesktop().browse(new URI("https://languagetool.org/es")); } catch (Exception e) {}
-    }
+    // private void abrirCorrectorWeb() {
+    //     try { Desktop.getDesktop().browse(new URI("https://languagetool.org/es")); } catch (Exception e) {}
+    // }
 
     private void ejecutarAnalisis() {
-
         try {
             if(areaTexto == null) return;
             String texto = areaTexto.getText();
-            if(texto.trim().isEmpty()) { JOptionPane.showMessageDialog(this, "Texto vacío"); return; }
+            if(texto.trim().isEmpty()) { JOptionPane.showMessageDialog(this, "El área de texto está vacía."); return; }
 
             if(logica == null) logica = new AnalizadorLogica();
             logica.analizar(texto);
 
             StringBuilder sb = new StringBuilder();
-            sb.append("INFORME TÉCNICO\n");
-            sb.append("===============\n\n");
-            sb.append("Total Palabras: ").append(logica.getTotalPalabras()).append("\n");
-            sb.append("Total Caracteres: ").append(logica.getTotalCaracteres()).append("\n");
-            sb.append("Total Líneas: ").append(logica.getTotalLineas()).append("\n");
-          
-            sb.append("\n(Análisis completo generado correctamente)");
+            
+            // CABECERA
+            sb.append("██ INFORME TÉCNICO AVANZADO ██\n");
+            sb.append("==============================\n");
+            sb.append("Idioma: ").append(logica.getIdiomaDetectado()).append("  |  ");
+            sb.append("Peso: ").append(logica.getPesoBytes()).append(" bytes  |  ");
+            sb.append("Entropía: ").append(String.format("%.2f", logica.getEntropiaShannon())).append(" bits/carácter\n\n");
+
+            // 1. VOLUMETRÍA
+            sb.append("┌── [1] VOLUMETRÍA ──────────────────────────┐\n");
+            sb.append(String.format("│ %-20s : %,d\n", "Caracteres Totales", logica.getTotalCaracteres()));
+            sb.append(String.format("│ %-20s : %,d\n", "Palabras Totales", logica.getTotalPalabras()));
+            sb.append(String.format("│ %-20s : %,d\n", "Sílabas Aprox.", logica.getTotalSilabas()));
+            sb.append(String.format("│ %-20s : %d\n", "Líneas", logica.getTotalLineas()));
+            sb.append(String.format("│ %-20s : %d\n", "Párrafos", logica.getTotalParrafos()));
+            sb.append(String.format("│ %-20s : %d\n", "Oraciones", logica.getTotalOraciones()));
+            sb.append("└────────────────────────────────────────────┘\n\n");
+
+            // 2. LINGÜÍSTICA Y CALIDAD
+            sb.append("┌── [2] ANÁLISIS LINGÜÍSTICO ────────────────┐\n");
+            sb.append("│ Riqueza Léxica     : ").append(String.format("%.2f%%", logica.getDensidadLexica())).append(" (Palabras únicas)\n");
+            sb.append("│ Palabras Únicas    : ").append(logica.getTotalPalabrasUnicas()).append("\n");
+            sb.append("│ Promedios          : \n");
+            sb.append("│   - ").append(String.format("%.2f", logica.getPromedioCaracteresPorPalabra())).append(" letras/palabra\n");
+            sb.append("│   - ").append(String.format("%.2f", logica.getPromedioSilabasPorPalabra())).append(" sílabas/palabra\n");
+            sb.append("│   - ").append(String.format("%.2f", logica.getPromedioPalabrasPorFrase())).append(" palabras/oración\n");
+            sb.append("│\n");
+            sb.append("│ NIVEL DE LECTURA (Índice de Legibilidad):\n");
+            sb.append("│   - Puntuación: ").append(String.format("%.1f", logica.getIndiceLegibilidad())).append("\n");
+            sb.append("│   - Veredicto : ").append(logica.getInterpretacionLegibilidad().toUpperCase()).append("\n");
+            sb.append("└────────────────────────────────────────────┘\n\n");
+
+            // 3. MINERÍA DE DATOS
+            sb.append("┌── [3] MINERÍA DE DATOS ────────────────────┐\n");
+            sb.append("│ Emails encontrados : ").append(logica.getCantidadEmails()).append("\n");
+            sb.append("│ Enlaces (URLs)     : ").append(logica.getCantidadURLs()).append("\n");
+            sb.append("│ Teléfonos          : ").append(logica.getCantidadTelefonos()).append("\n");
+            sb.append("│ Fechas detectadas  : ").append(logica.getCantidadFechas()).append("\n");
+            sb.append("│ Direcciones IP     : ").append(logica.getCantidadIPs()).append("\n");
+            sb.append("│ Hashtags (#)       : ").append(logica.getCantidadHashtags()).append("\n");
+            sb.append("└────────────────────────────────────────────┘\n\n");
+            
+            // 4. CURIOSIDADES Y EXTREMOS
+            sb.append(">>> CURIOSIDADES Y EXTREMOS <<<\n");
+            sb.append("• Carácter más usado : '").append(logica.getCaracterMasUsado()).append("'\n");
+            sb.append("• Palabra más larga  : \"").append(logica.getPalabraMasLarga()).append("\"\n");
+            
+            // Mostrar oraciones extremas truncadas si son muy largas
+            String oracionLarga = logica.getOracionMasLarga();
+            if (oracionLarga.length() > 60) oracionLarga = oracionLarga.substring(0, 60) + "...";
+            sb.append("• Oración más larga  : \"").append(oracionLarga).append("\"\n");
 
             areaResultadosGeneral.setText(sb.toString());
             areaResultadosGeneral.setCaretPosition(0);
 
-        
+            // --- PESTAÑA 2: FRECUENCIAS Y TOP PALABRAS ---
             StringBuilder sbFreq = new StringBuilder();
-            sbFreq.append("LETRA\tFRECUENCIA\n");
+            sbFreq.append("=== TOP 10 PALABRAS MÁS USADAS ===\n");
+            int rank = 1;
+            for(Map.Entry<String, Integer> entry : logica.getTopPalabrasMasUsadas()) {
+                sbFreq.append("#").append(rank++).append(" ").append(entry.getKey())
+                      .append(" (").append(entry.getValue()).append(" veces)\n");
+            }
+            
+            sbFreq.append("\n=== FRECUENCIA DE LETRAS ===\n");
+            sbFreq.append("LETRA\tCANT\tGRAFICO\n");
             logica.getFrecuenciaLetras().entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
-                    .forEach(e -> sbFreq.append(e.getKey()).append("\t").append(e.getValue()).append("\n"));
+                    .forEach(e -> {
+                        sbFreq.append(e.getKey()).append("\t")
+                              .append(e.getValue()).append("\t");
+                        int barrita = Math.min(e.getValue() / (Math.max(1, logica.getTotalCaracteres()/100)), 20); 
+                        for(int i=0; i<barrita; i++) sbFreq.append("█");
+                        sbFreq.append("\n");
+                    });
             areaFrecuencia.setText(sbFreq.toString());
 
         } catch (Exception e) {
+            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al analizar: " + e.getMessage());
         }
     }
@@ -576,7 +632,7 @@ public class AnalizadorGUI extends JFrame {
         SwingUtilities.invokeLater(() -> {
             AnalizadorGUI frame = new AnalizadorGUI();
             
-            frame.setDefaultLookAndFeelDecorated(true);
+            //frame.setDefaultLookAndFeelDecorated(true);
             frame.setVisible(true);
         });
     }
