@@ -55,7 +55,7 @@ Interactúa con el documento mediante un chat lateral integrado.
 | :--- | :--- | :--- |
 | **Lenguaje** | Java (JDK 17+) | Lógica central y POO. |
 | **Frontend** | Swing + FlatLaf | Framework gráfico con Look & Feel moderno. |
-| **Inteligencia** | Google Gemini API | Modelo `gemini-1.5-pro` vía HTTP Client nativo. |
+| **Inteligencia** | Google Gemini API | Modelo `gemini-3-pro` vía HTTP Client nativo. |
 | **Persistencia** | Java IO | Exportación de reportes `.txt`. |
 
 ---
@@ -65,3 +65,10 @@ Interactúa con el documento mediante un chat lateral integrado.
 1. **Clonar el repositorio**
    ```bash
    git clone [https://github.com/tu-usuario/analizador-texto-ia.git](https://github.com/tu-usuario/analizador-texto-ia.git)
+
+   ## 👨‍💻 Autores
+
+| Nombre | Rol | GitHub |
+| :--- | :--- | :--- |
+| **Francisco Fonseca** | Desarrollo y Documentación | [@SiraTop](https://github.com/Siratop) |
+| **Jesús Colmenares** | Desarrollo y Documentación | [@JesusShady](https://github.com/JesusShady) |
