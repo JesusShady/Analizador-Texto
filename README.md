@@ -66,9 +66,15 @@ Interactúa con el documento mediante un chat lateral integrado.
    ```bash
    git clone [https://github.com/tu-usuario/analizador-texto-ia.git](https://github.com/tu-usuario/analizador-texto-ia.git)
 
-   ## 👨‍💻 Autores
+
+👨‍💻 Autores
 
 | Nombre | Rol | GitHub |
 | :--- | :--- | :--- |
 | **Francisco Fonseca** | Desarrollo y Documentación | [@SiraTop](https://github.com/Siratop) |
 | **Jesús Colmenares** | Desarrollo y Documentación | [@JesusShady](https://github.com/JesusShady) |
+
+
+<div align="center">
+  <small>Proyecto realizado para la UNEG - Semestre IV - Técnicas de Programación 3</small>
+</div>
