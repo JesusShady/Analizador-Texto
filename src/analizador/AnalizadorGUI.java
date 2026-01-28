@@ -447,7 +447,7 @@ public class AnalizadorGUI extends JFrame {
     btnEnviar.setBackground(new Color(138, 43, 226)); // Morado
     btnEnviar.setForeground(Color.WHITE);
 
-    // NUEVO BOTÓN: APLICAR
+    // BOTON DE APLICAR
     JButton btnAplicar = new JButton("Aplicar al Editor");
     btnAplicar.setBackground(new Color(40, 167, 69)); // Verde
     btnAplicar.setForeground(Color.WHITE);
@@ -466,7 +466,7 @@ public class AnalizadorGUI extends JFrame {
   
     final String[] ultimaRespuestaIA = { "" };
 
-    //LÓGICA DE ENVÍO ---
+    //LOGICA DE ENVÍO ---
     Runnable accionEnviar = () -> {
         String pregunta = txtInput.getText().trim();
         if (pregunta.isEmpty()) return;
@@ -499,7 +499,7 @@ public class AnalizadorGUI extends JFrame {
             Instrucción del usuario: %s
             """;
     
-    // Inyectamos la instrucción del usuario dentro de nuestras reglas rígidas
+    // Inyectamos la instrucción del usuario dentro de nuestras reglas 
     String promptFinal = String.format(promptDeSistema, pregunta);
     
     // Enviamos el prompt "trucado" a la IA, pero el usuario solo vio su pregunta original

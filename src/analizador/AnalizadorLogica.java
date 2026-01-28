@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 public class AnalizadorLogica {
 
     // --- VARIABLES DE ESTADO ---
-    // Volumetria básica
+    // Volumetria basica
     private int totalCaracteres, totalPalabras, totalParrafos, totalOraciones, totalLineas;
     private int totalSilabas;
     
@@ -42,7 +42,7 @@ public class AnalizadorLogica {
     private int cantidadCaracterMasUsado = 0; 
     
     private Map<Character, Integer> frecuenciaLetras;
-    private Map<String, Integer> frecuenciaPalabras; // Nuevo: Top palabras
+    private Map<String, Integer> frecuenciaPalabras; //Top Palabras
     private List<Map.Entry<String, Integer>> topPalabrasMasUsadas;
     
     private String idiomaDetectado;
@@ -60,10 +60,10 @@ public class AnalizadorLogica {
         totalCaracteres = texto.length();
         totalLineas = texto.split("\\r?\\n", -1).length;
         
-        // 2. DETECCIÓN DE IDIOMA PRELIMINAR (Para ajustar sílabas)
+        // 2. DETECCIÓN DE IDIOMA PRELIMINAR aqui se ajustan las silabas
         detectarIdioma(texto.toLowerCase());
         
-        // 3. ANÁLISIS POR CARÁCTER Y ENTROPÍA
+        // 3. ANALISIS POR CARÁCTER Y ENTROPÍA
         Map<Character, Integer> conteoChars = new HashMap<>();
         for (char c : texto.toCharArray()) {
             conteoChars.put(c, conteoChars.getOrDefault(c, 0) + 1);
@@ -94,7 +94,7 @@ public class AnalizadorLogica {
             }
         }
 
-        // 4. ANaLISIS DE PALABRAS Y SiLABAS
+        // 4. ANALISIS DE PALABRAS Y SiLABAS
         // Regex para separar palabras limpias (incluye acentos del español)
         String[] palabrasRaw = texto.split("[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9]+");
         long sumaLongitud = 0;
@@ -187,7 +187,7 @@ public class AnalizadorLogica {
             // P = Sílabas por cada 100 palabras
             // F = Frases por cada 100 palabras (Aquí usaremos la inversa: Palabras/Frase)
             
-            // Nota: La fórmula estándar suele expresarse como: 
+            //La formula estandar suele expresarse como: 
             // 206.84 - 60 * (sílabas/palabras) - 1.02 * (palabras/frases)
             indiceLegibilidad = 206.84 - (60.0 * promedioSilabasPorPalabra) - (1.02 * promedioPalabrasPorFrase);
             
@@ -214,11 +214,11 @@ public class AnalizadorLogica {
 
     private int contarSilabas(String palabra) {
         // Heuristica simple: Contar grupos de vocales
-        // Funciona decentemente para estimaciones estadísticas en Esp/Ing
+        // Funciona decentemente para estimaciones estadisticas en Esp/Ing
         String clean = palabra.toLowerCase().replaceAll("[^a-zxcvbnmasdfghjklqwertyuiopáéíóúü]", "");
         if (clean.length() <= 3) return 1; // Palabras muy cortas suelen ser 1 sílaba
         
-        // Quitar 'e' muda al final si es inglés (aproximación)
+        // Quitar 'e' muda al final si es ingles (aproximación) 
         if (!idiomaDetectado.equals("Español") && clean.endsWith("e")) {
             clean = clean.substring(0, clean.length() - 1);
         }
@@ -263,7 +263,7 @@ public class AnalizadorLogica {
         indiceLegibilidad = 0; interpretacionLegibilidad = "N/A";
     }
 
-    // --- GETTERS (¡Muchos!) ---
+    // --- GETTERS ---
     public int getTotalLineas() { return totalLineas; }
     public int getTotalCaracteres() { return totalCaracteres; }
     public int getTotalPalabras() { return totalPalabras; }
