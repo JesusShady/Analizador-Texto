@@ -16,7 +16,9 @@
 
   <br />
 
-  <img src="ruta/a/tu/captura_de_pantalla.png" alt="Dashboard Principal" width="800" style="border-radius: 10px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);">
+  <img width="1919" height="1032" alt="Image" src="https://github.com/user-attachments/assets/68ce1cd3-87c8-4f99-966d-3e6235a12826" />
+<img width="1919" height="1032" alt="Image" src="https://github.com/user-attachments/assets/5de61ea7-c87a-4487-a1db-704927b8f34a" />
+<img width="1919" height="1031" alt="Image" src="https://github.com/user-attachments/assets/c025caa9-f70c-469f-9d8e-ebad2756ac0b" />
 
   <br /><br />
 </div>
@@ -53,7 +55,7 @@ Interactúa con el documento mediante un chat lateral integrado.
 | :--- | :--- | :--- |
 | **Lenguaje** | Java (JDK 17+) | Lógica central y POO. |
 | **Frontend** | Swing + FlatLaf | Framework gráfico con Look & Feel moderno. |
-| **Inteligencia** | Google Gemini API | Modelo `gemini-1.5-pro` vía HTTP Client nativo. |
+| **Inteligencia** | Google Gemini API | Modelo `gemini-3-pro` vía HTTP Client nativo. |
 | **Persistencia** | Java IO | Exportación de reportes `.txt`. |
 
 ---
@@ -63,3 +65,16 @@ Interactúa con el documento mediante un chat lateral integrado.
 1. **Clonar el repositorio**
    ```bash
    git clone [https://github.com/tu-usuario/analizador-texto-ia.git](https://github.com/tu-usuario/analizador-texto-ia.git)
+
+
+👨‍💻 Autores
+
+| Nombre | Rol | GitHub |
+| :--- | :--- | :--- |
+| **Francisco Fonseca** | Desarrollo y Documentación | [@SiraTop](https://github.com/Siratop) |
+| **Jesús Colmenares** | Desarrollo y Documentación | [@JesusShady](https://github.com/JesusShady) |
+
+
+<div align="center">
+  <small>Proyecto realizado para la UNEG - Semestre IV - Técnicas de Programación 3</small>
+</div>
