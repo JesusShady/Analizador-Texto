@@ -45,9 +45,9 @@ public class AnalizadorGUI extends JFrame {
     private final Color COLOR_TEXTO = new Color(230, 230, 230);
     
     // Colores de los botones
-    private final Color BTN_ACCION_BG = new Color(40, 167, 69); // Verde moderno
+    private final Color BTN_ACCION_BG = new Color(40, 167, 69); 
     private final Color BTN_ACCION_FG = Color.WHITE;
-    private final Color BTN_INFO_BG = new Color(23, 162, 184);   // Azul moderno
+    private final Color BTN_INFO_BG = new Color(23, 162, 184); 
 
     public AnalizadorGUI() {
         logica = new AnalizadorLogica();
@@ -115,7 +115,8 @@ public class AnalizadorGUI extends JFrame {
         areaTexto.setCaretColor(Color.WHITE);
         areaTexto.setFont(FUENTE_EDITOR);
         areaTexto.setMargin(MARGENES_EDITOR);
-        areaTexto.setLineWrap(false);
+        areaTexto.setLineWrap(true);
+        areaTexto.setWrapStyleWord(true);
 
         areaNumeros = new JTextArea("1");
         areaNumeros.setBackground(COLOR_NUMEROS_BG);
@@ -133,7 +134,7 @@ public class AnalizadorGUI extends JFrame {
 
         JPanel panelEditor = new JPanel(new BorderLayout());
         
-        panelEditor.setBorder(BorderFactory.createTitledBorder(" Editor de Código "));
+        panelEditor.setBorder(BorderFactory.createTitledBorder(" TEXTO "));
         panelEditor.add(scrollTexto, BorderLayout.CENTER);
 
         splitPane.setLeftComponent(panelEditor);
@@ -339,6 +340,27 @@ public class AnalizadorGUI extends JFrame {
             sb.append("│   - Veredicto : ").append(logica.getInterpretacionLegibilidad().toUpperCase()).append("\n");
             sb.append("└────────────────────────────────────────────┘\n\n");
 
+                sb.append("┌── [2.5] ANÁLISIS DE CÓDIGO ─────────────────┐\n");
+            if (!logica.getLenguajeProgramacion().equals("Texto plano")) {
+                sb.append("│ Lenguaje detectado : ").append(logica.getLenguajeProgramacion()).append("\n");
+                sb.append("│ Funciones/Métodos  : ").append(logica.getCantidadFunciones()).append("\n");
+                sb.append("│ Clases             : ").append(logica.getCantidadClases()).append("\n");
+                sb.append("│ Imports/Includes   : ").append(logica.getCantidadImports()).append("\n");
+                sb.append("│ Comentarios        : ").append(logica.getCantidadComentarios()).append("\n");
+                sb.append("│ Complejidad/Func   : ").append(String.format("%.2f", logica.getComplejidadCodigo())).append("\n");
+            } else {
+                sb.append("│ No se detectó código de programación\n");
+            }
+            sb.append("└────────────────────────────────────────────┘\n\n");
+
+        sb.append("┌── [4] CALIDAD DEL TEXTO ───────────────────┐\n");
+        sb.append("│ Palabras de contenido : ").append(String.format("%.1f%%", logica.getRatioContenido())).append("\n");
+        sb.append("│ Palabras repetidas    : ").append(logica.getPalabrasRepetidas()).append("\n");
+        sb.append("│ Espacios múltiples    : ").append(logica.getEspaciosMultiples()).append("\n");
+        sb.append("│ Líneas vacías         : ").append(logica.getLineasVacias()).append("\n");
+        sb.append("│ Diversidad léxica (K) : ").append(String.format("%.2f", logica.getDiversidadLexica())).append("\n");
+        sb.append("└────────────────────────────────────────────┘\n\n");
+
             // 3. MINERÍA DE DATOS
             sb.append("┌── [3] MINERÍA DE DATOS ────────────────────┐\n");
             sb.append("│ Emails encontrados : ").append(logica.getCantidadEmails()).append("\n");
@@ -425,11 +447,59 @@ public class AnalizadorGUI extends JFrame {
     areaChat.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 14));
     areaChat.setBackground(new Color(45, 48, 55));
     
-    String estiloCSS = "<style>"
-            + "body { font-family: 'Segoe UI Emoji', sans-serif; font-size: 14px; color: #E0E0E0; margin: 10px; }"
-            + ".user { color: #FFFFFF; font-weight: bold; margin-top: 10px; }"
-            + ".gemini { color: #FFD700; font-weight: bold; margin-top: 10px; }"
-            + ".msg { margin-bottom: 5px; }"
+     String estiloCSS = "<style>"
+            + "body { "
+            + "  font-family: 'Segoe UI', 'Segoe UI Emoji', Arial, sans-serif; "
+            + "  font-size: 14px; "
+            + "  color: #E0E0E0; "
+            + "  margin: 5px; "
+            + "  padding: 5px; "
+            + "  width: 95%; "                      // Ancho fijo en porcentaje
+            + "  max-width: 95%; "
+            + "}"
+            + ".user { "
+            + "  color: #FFFFFF; "
+            + "  font-weight: bold; "
+            + "  margin-top: 12px; "
+            + "  margin-bottom: 5px; "
+            + "  display: block; "                  // Forzar como bloque
+            + "}"
+            + ".gemini { "
+            + "  color: #FFD700; "
+            + "  font-weight: bold; "
+            + "  margin-top: 12px; "
+            + "  margin-bottom: 5px; "
+            + "  display: block; "
+            + "}"
+            + ".msg { "
+            + "  display: block; "                  // Bloque independiente
+            + "  margin: 5px 0 15px 0; "
+            + "  padding: 10px; "
+            + "  background-color: rgba(255,255,255,0.05); "
+            + "  border-radius: 8px; "
+            + "  word-wrap: break-word !important; "        
+            + "  overflow-wrap: break-word !important; "
+            + "  white-space: pre-wrap !important; "
+            + "  max-width: 100%; "
+            + "  width: auto; "
+            + "  line-height: 1.6; "
+            + "}"
+            + "pre { "
+            + "  background-color: #1e1e1e; "
+            + "  padding: 10px; "
+            + "  border-radius: 5px; "
+            + "  overflow-x: auto; "
+            + "  white-space: pre-wrap !important; "
+            + "  word-wrap: break-word !important; "
+            + "  margin: 10px 0; "
+            + "}"
+            + "code { "
+            + "  font-family: 'Consolas', 'Courier New', monospace; "
+            + "  background-color: rgba(0,0,0,0.3); "
+            + "  padding: 2px 6px; "
+            + "  border-radius: 3px; "
+            + "  white-space: pre-wrap; "
+            + "}"
             + "</style>";
 
     StringBuilder historialHtml = new StringBuilder();
@@ -509,48 +579,50 @@ public class AnalizadorGUI extends JFrame {
     ultimaRespuestaIA[0] = respuesta;
 
     SwingUtilities.invokeLater(() -> {
+    String respuestaHtml = convertirMarkdownAHtml(respuesta);
 
-        // Convertimos a HTML para que se vea bonito en el chat
-        String respuestaHtml = convertirMarkdownAHtml(respuesta);
+    if (!respuestaHtml.contains("Hola") && !respuestaHtml.contains("Aquí")) {
+         respuestaHtml = "<i>(Código generado listo para aplicar)</i><br>" + respuestaHtml;
+    }
 
-       
-        if (!respuestaHtml.contains("Hola") && !respuestaHtml.contains("Aquí")) {
-             respuestaHtml = "<i>(Código generado listo para aplicar)</i><br>" + respuestaHtml;
-        }
+    // DIV
+    respuestaHtml = "<div style='word-wrap: break-word; white-space: pre-wrap; max-width: 100%;'>" 
+                    + respuestaHtml 
+                    + "</div>";
 
-        historialHtml.append("<div class='gemini'>✨ GEMINI:</div>")
-                     .append("<div class='msg'>").append(respuestaHtml).append("</div>");
+    historialHtml.append("<div class='gemini'>✨ GEMINI:</div>")
+                 .append("<div class='msg'>").append(respuestaHtml).append("</div>");
 
-        areaChat.setText(historialHtml.toString() + "</body></html>");
-        
-        txtInput.setEnabled(true);
-        btnEnviar.setEnabled(true);
-        btnAplicar.setEnabled(true); 
-        txtInput.requestFocus();
-        areaChat.setCaretPosition(areaChat.getDocument().getLength());
-    });
+    areaChat.setText(historialHtml.toString() + "</body></html>");
+    
+    txtInput.setEnabled(true);
+    btnEnviar.setEnabled(true);
+    btnAplicar.setEnabled(true); 
+    txtInput.requestFocus();
+    areaChat.setCaretPosition(areaChat.getDocument().getLength());
+    });;
     }).start();
     };
 
     // --- LÓGICA DEL BOTÓN APLICAR ---
-    btnAplicar.addActionListener(e -> {
-        String textoIA = ultimaRespuestaIA[0];
-        if (textoIA == null || textoIA.isEmpty()) return;
+   btnAplicar.addActionListener(e -> {
+    String textoIA = ultimaRespuestaIA[0];
+    if (textoIA == null || textoIA.isEmpty()) return;
 
-        int confirm = JOptionPane.showConfirmDialog(dialogoIA, 
-            "Esto reemplazará TODO el contenido del editor principal con la respuesta de la IA.\n¿Estás seguro?",
-            "Confirmar reemplazo", JOptionPane.YES_NO_OPTION);
+    int confirm = JOptionPane.showConfirmDialog(dialogoIA, 
+        "Esto reemplazará TODO el contenido del editor principal con la respuesta de la IA.\n¿Estás seguro?",
+        "Confirmar reemplazo", JOptionPane.YES_NO_OPTION);
+    
+    if (confirm == JOptionPane.YES_OPTION) {
+        String textoLimpio = extraerContenidoCodigo(textoIA);
         
-        if (confirm == JOptionPane.YES_OPTION) {
-          
-            String textoLimpio = extraerContenidoCodigo(textoIA);
-            
-            areaTexto.setText(textoLimpio);
-            actualizarNumerosLinea(); 
-            ejecutarAnalisis();     
-            dialogoIA.dispose();     
-        }
-    });
+        areaTexto.setText(textoLimpio);
+        areaTexto.setCaretPosition(0);
+        actualizarNumerosLinea(); 
+        ejecutarAnalisis();     
+        dialogoIA.dispose();     
+    }
+});
 
     btnEnviar.addActionListener(e -> accionEnviar.run());
     txtInput.addActionListener(e -> accionEnviar.run());
@@ -570,11 +642,10 @@ public class AnalizadorGUI extends JFrame {
     //             .replace("'", "&#39;");
     // }
 
-    private String convertirMarkdownAHtml(String texto) {
-    if (texto == null) return "";
+     private String convertirMarkdownAHtml(String texto) {
+    if (texto == null || texto.isEmpty()) return "";
     
-    // 1. Escapar HTML propio del texto para evitar inyecciones, 
-    // pero manteniendo los saltos de línea para procesarlos después
+    // 1. Escapar caracteres HTML peligrosos
     String html = texto.replace("&", "&amp;")
                        .replace("<", "&lt;")
                        .replace(">", "&gt;");
@@ -582,35 +653,52 @@ public class AnalizadorGUI extends JFrame {
     // 2. Convertir Negritas: **texto** -> <b>texto</b>
     html = html.replaceAll("\\*\\*(.*?)\\*\\*", "<b>$1</b>");
 
-    // 3. Convertir Títulos: ### Texto -> <h3>Texto</h3>
+    // 3. Convertir Cursivas: *texto* -> <i>texto</i>
+    html = html.replaceAll("\\*(?!\\*)(.*?)\\*(?!\\*)", "<i>$1</i>");
+
+    // 4. Convertir Títulos: ### Texto -> <h3>Texto</h3>
     html = html.replaceAll("### (.*?)(?:\\n|$)", "<h3>$1</h3>");
 
-    // 4. Convertir Listas con viñetas: * Texto -> • Texto
+    // 5. Convertir Listas con viñetas: * Texto -> • Texto
     html = html.replaceAll("(?m)^\\* (.*)$", "&bull; $1");
 
-    // 5. Convertir Listas numéricas (simple): 1. Texto -> <b>1.</b> Texto
-    // Esto ayuda a que los números resalten
+    // 6. Convertir Listas numéricas: 1. Texto -> <b>1.</b> Texto
     html = html.replaceAll("(?m)^(\\d+\\.) (.*)$", "<b>$1</b> $2");
 
-    // 6. Finalmente, convertir saltos de línea a <br>
+    // 7.Convertir saltos de línea múltiples a párrafos
+   
+    html = html.replace("\r\n", "\n").replace("\r", "\n");
+    html = html.replace("\n\n", "</p><p>");
     html = html.replace("\n", "<br>");
+    html = "<p>" + html + "</p>";
+    html = html.replace("<p></p>", "");
+    html = html.replace("<p><br></p>", "");
 
     return html;
- }
+}
 
     private String extraerContenidoCodigo(String textoBruto) {
-    // Patrón para buscar contenido entre tres comillas invertidas ```
-    // Pattern.DOTALL permite que el punto (.) incluya saltos de línea
-    Pattern pattern = Pattern.compile("```(?:\\w*\\n)?(.*?)```", Pattern.DOTALL);
-    Matcher matcher = pattern.matcher(textoBruto);
-
-    if (matcher.find()) {
-        // Si encuentra un bloque de código, devuelve SOLO lo de adentro
-        return matcher.group(1).trim(); 
+    if (textoBruto == null || textoBruto.isEmpty()) {
+        return "";
     }
     
-    // Si no hay bloques de código, devuelve el texto completo (asumiendo que es puro texto)
-    return textoBruto;
+    Pattern pattern = Pattern.compile("```[\\w]*\\s*\\n?(.*?)```", Pattern.DOTALL);
+    Matcher matcher = pattern.matcher(textoBruto);
+
+    String resultado;
+    
+    if (matcher.find()) {
+      
+        resultado = matcher.group(1);
+    } else {
+       
+        resultado = textoBruto;
+    }
+    resultado = resultado.trim();
+    resultado = resultado.replace("\r\n", "\n");
+    resultado = resultado.replace("\r", "\n");
+    
+    return resultado;
 }
 
     // --- MAIN ---

@@ -98,6 +98,10 @@ public class ServicioIA {
     }
    
     private String unescapeJson(String input) {
+    if (input == null || input.isEmpty()) {
+        return "";
+    }
+    
     StringBuilder sb = new StringBuilder(input.length());
     for (int i = 0; i < input.length(); i++) {
         char c = input.charAt(i);
@@ -118,8 +122,8 @@ public class ServicioIA {
             case '/': sb.append('/'); break;
             case 'b': sb.append('\b'); break;
             case 'f': sb.append('\f'); break;
-            case 'n': sb.append('\n'); break;
-            case 'r': sb.append('\r'); break;
+            case 'n': sb.append('\n'); break;      
+            case 'r': sb.append('\r'); break;      
             case 't': sb.append('\t'); break;
             case 'u':
                 if (i + 4 <= input.length() - 1) {
@@ -153,6 +157,13 @@ public class ServicioIA {
                 sb.append(next);
         }
     }
-    return sb.toString();
+    
+    //Asegurar que los saltos están correctos
+    String resultado = sb.toString();
+    if (resultado.contains("\\n")) {
+        resultado = resultado.replace("\\n", "\n");
+    }
+    
+    return resultado;
 }
 }

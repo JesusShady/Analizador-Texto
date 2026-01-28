@@ -47,6 +47,41 @@ public class AnalizadorLogica {
     
     private String idiomaDetectado;
 
+    private String lenguajeProgramacion = "Texto plano";
+    private int cantidadComentarios = 0;
+    private int cantidadFunciones = 0;
+    private int cantidadClases = 0;
+    private int cantidadImports = 0;
+    private double complejidadCodigo = 0;
+
+    private int palabrasRepetidas = 0;
+    private int espaciosMultiples = 0;
+    private int lineasVacias = 0;
+    private double diversidadLexica = 0; // Type-Token Ratio mejorado
+
+    private double medianaLongitudPalabra = 0;
+    private double desviacionEstandarPalabra = 0;
+    private int palabrasMasLargas = 0; // Palabras > 10 letras
+    private int palabrasCortas = 0;    // Palabras < 4 letras
+    private int palabrasVacias = 0;
+    private double ratioContenido = 0;
+
+    private static final Set<String> STOP_WORDS_ES = new HashSet<>(Arrays.asList(
+    "el", "la", "de", "que", "y", "a", "en", "un", "ser", "se", "no", "haber",
+    "por", "con", "su", "para", "como", "estar", "tener", "le", "lo", "todo",
+    "pero", "más", "hacer", "o", "poder", "decir", "este", "ir", "otro", "ese",
+    "si", "me", "ya", "ver", "porque", "dar", "cuando", "él", "muy", "sin",
+    "vez", "mucho", "saber", "qué", "sobre", "mi", "alguno", "mismo", "yo"
+    ));
+
+    // Lista de stop words inglés
+    private static final Set<String> STOP_WORDS_EN = new HashSet<>(Arrays.asList(
+    "the", "be", "to", "of", "and", "a", "in", "that", "have", "i", "it",
+    "for", "not", "on", "with", "he", "as", "you", "do", "at", "this", "but",
+    "his", "by", "from", "they", "we", "say", "her", "she", "or", "an", "will",
+    "my", "one", "all", "would", "there", "their", "what", "so", "up", "out"
+    ));
+
     // --- METODO PRINCIPAL ---
     public void analizar(String texto) {
         if (texto == null || texto.isEmpty()) {
@@ -62,6 +97,12 @@ public class AnalizadorLogica {
         
         // 2. DETECCIÓN DE IDIOMA PRELIMINAR aqui se ajustan las silabas
         detectarIdioma(texto.toLowerCase());
+
+        //detectar lenguaje de programacion
+        detectarLenguajeProgramacion(texto);
+        if (!lenguajeProgramacion.equals("Texto plano")) {
+        analizarCodigoFuente(texto);
+        }
         
         // 3. ANALISIS POR CARÁCTER Y ENTROPÍA
         Map<Character, Integer> conteoChars = new HashMap<>();
@@ -95,7 +136,8 @@ public class AnalizadorLogica {
         }
 
         // 4. ANALISIS DE PALABRAS Y SiLABAS
-        // Regex para separar palabras limpias (incluye acentos del español)
+        // Regex para separar palabras limpias donde se incluyen los acentos en español
+        
         String[] palabrasRaw = texto.split("[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9]+");
         long sumaLongitud = 0;
         
@@ -111,6 +153,21 @@ public class AnalizadorLogica {
             
             if (p.length() > palabraMasLarga.length()) palabraMasLarga = p;
         }
+
+        Set<String> stopWords = idiomaDetectado.equals("Español") ? STOP_WORDS_ES : STOP_WORDS_EN;
+    for (String p : palabrasRaw) {
+    if (p.trim().isEmpty()) continue;
+    String pLower = p.toLowerCase();
+    
+    if (stopWords.contains(pLower)) {
+        palabrasVacias++;
+    }
+    
+    }
+
+    if (totalPalabras > 0) {
+    ratioContenido = ((double)(totalPalabras - palabrasVacias) / totalPalabras) * 100;
+    }
         
         // Calcular metricas de palabras
         totalPalabrasUnicas = frecuenciaPalabras.size();
@@ -164,6 +221,11 @@ public class AnalizadorLogica {
         cantidadHashtags = contarRegex(texto, "#[a-zA-Z0-9_]+");
         // Direcciones IP v4
         cantidadIPs = contarRegex(texto, "\\b(?:\\d{1,3}\\.){3}\\d{1,3}\\b");
+
+
+        //
+        analizarCalidadTexto(texto);
+        calcularEstadisticasAvanzadas();
     }
 
     // --- ALGORITMOS AUXILIARES ---
@@ -231,19 +293,167 @@ public class AnalizadorLogica {
         return Math.max(1, count);
     }
     
+    private void detectarLenguajeProgramacion(String texto) {
+    String textoMin = texto.toLowerCase();
+    
+    // Java
+    if (textoMin.contains("public class") || textoMin.contains("import java.") 
+        || textoMin.contains("void ") || textoMin.contains("system.out.println")) {
+        lenguajeProgramacion = "Java";
+    }
+    // Python
+    else if (textoMin.contains("def ") || textoMin.contains("import ") 
+             || textoMin.contains("print(") || textoMin.contains("class ") && textoMin.contains(":")) {
+        lenguajeProgramacion = "Python";
+    }
+    // JavaScript
+    else if (textoMin.contains("function ") || textoMin.contains("const ") 
+             || textoMin.contains("let ") || textoMin.contains("console.log")) {
+        lenguajeProgramacion = "JavaScript";
+    }
+    // C/C++
+    else if (textoMin.contains("#include") || textoMin.contains("int main(") 
+             || textoMin.contains("printf(") || textoMin.contains("std::")) {
+        lenguajeProgramacion = "C/C++";
+    }
+    // HTML
+    else if (textoMin.contains("<html") || textoMin.contains("</div>") 
+             || textoMin.contains("<!doctype")) {
+        lenguajeProgramacion = "HTML";
+    }
+    // SQL
+    else if (textoMin.contains("select ") || textoMin.contains("from ") 
+             || textoMin.contains("insert into") || textoMin.contains("create table")) {
+        lenguajeProgramacion = "SQL";
+    }
+    else {
+        lenguajeProgramacion = "Texto plano";
+    }
+}
+
+    private void analizarCodigoFuente(String texto) {
+        // Comentarios (// /* */ #)
+        cantidadComentarios = contarRegex(texto, "//.*|/\\*.*?\\*/|#.*");
+        
+        // Funciones/Metodos (aproximación)
+        cantidadFunciones = contarRegex(texto, 
+            "(?:public|private|protected|static)?\\s*\\w+\\s+\\w+\\s*\\([^)]*\\)\\s*\\{");
+        
+        // Clases
+        cantidadClases = contarRegex(texto, "(?:public\\s+)?class\\s+\\w+");
+        
+        // Imports
+        cantidadImports = contarRegex(texto, "^\\s*(?:import|#include|using)\\s+", Pattern.MULTILINE);
+        
+        // Complejidad de ciclos basica (contar if, for, while, case, catch)
+        int ciclos = contarRegex(texto, "\\b(?:if|for|while|case|catch|else if)\\b");
+        complejidadCodigo = ciclos > 0 ? ciclos / (double) Math.max(1, cantidadFunciones) : 0;
+    }
+
+    private void analizarCalidadTexto(String texto) {
+    // Espacios variados
+    espaciosMultiples = contarRegex(texto, " {2,}");
+    
+    // Lineas Vacias
+   lineasVacias = contarRegex(texto, "^\\s*$", Pattern.MULTILINE);
+    
+    // Palabras repetidas consecutivas (ej: "el el")
+    String[] palabras = texto.toLowerCase().split("\\s+");
+    for (int i = 0; i < palabras.length - 1; i++) {
+        if (!palabras[i].isEmpty() && palabras[i].equals(palabras[i + 1])) {
+            palabrasRepetidas++;
+        }
+    }
+    
+    // Diversidad Lexica (Índice de Yule K)
+    if (totalPalabras > 0) {
+        long sumaCuadrados = frecuenciaPalabras.values().stream()
+            .mapToLong(v -> (long) v * v)
+            .sum();
+        diversidadLexica = 10000.0 * (sumaCuadrados - totalPalabras) 
+                          / (totalPalabras * totalPalabras);
+    }
+    }
+
     private int contarRegex(String texto, String regex) {
         Matcher m = Pattern.compile(regex).matcher(texto);
         int count = 0;
         while (m.find()) count++;
         return count;
     }
+
+    private int contarRegex(String texto, String regex, int flags) {
+    Matcher m = Pattern.compile(regex, flags).matcher(texto);
+    int count = 0;
+    while (m.find()) count++;
+    return count;
+}
     
     private void detectarIdioma(String txt) {
-        // Método simple pero efectivo por palabras clave
-        if (txt.contains(" el ") || txt.contains(" la ") || txt.contains(" que ") || txt.contains(" y ")) idiomaDetectado = "Español";
-        else if (txt.contains(" the ") || txt.contains(" and ") || txt.contains(" is ") || txt.contains(" of ")) idiomaDetectado = "Ingles";
-        else idiomaDetectado = "Desconocido/Otro";
+    int scoreEspanol = 0;
+    int scoreIngles = 0;
+    
+    // Palabras clave ponderadas
+    if (txt.contains(" el ") || txt.contains(" la ")) scoreEspanol += 3;
+    if (txt.contains(" que ")) scoreEspanol += 2;
+    if (txt.contains(" y ")) scoreEspanol += 1;
+    if (txt.contains(" de ") || txt.contains(" en ")) scoreEspanol += 2;
+    if (txt.contains("ción ") || txt.contains("ión ")) scoreEspanol += 3;
+    
+    if (txt.contains(" the ")) scoreIngles += 3;
+    if (txt.contains(" and ")) scoreIngles += 2;
+    if (txt.contains(" is ") || txt.contains(" of ")) scoreIngles += 2;
+    if (txt.contains("ing ") || txt.contains("ed ")) scoreIngles += 2;
+    
+    // Caracteres específicos
+    if (txt.contains("á") || txt.contains("é") || txt.contains("í") 
+        || txt.contains("ó") || txt.contains("ú") || txt.contains("ñ")) {
+        scoreEspanol += 5;
     }
+    
+    if (scoreEspanol > scoreIngles) {
+        idiomaDetectado = "Español";
+    } else if (scoreIngles > scoreEspanol) {
+        idiomaDetectado = "Inglés";
+    } else {
+        idiomaDetectado = "Desconocido/Otro";
+    }
+}
+
+    private void calcularEstadisticasAvanzadas() {
+    if (frecuenciaPalabras.isEmpty()) return;
+    
+    // Crear lista de longitudes ponderada por frecuencia
+    List<Integer> longitudes = new ArrayList<>();
+    for (Map.Entry<String, Integer> entry : frecuenciaPalabras.entrySet()) {
+        int longitud = entry.getKey().length();
+        int frecuencia = entry.getValue();
+        
+        for (int i = 0; i < frecuencia; i++) {
+            longitudes.add(longitud);
+        }
+        
+        // Contar palabras largas y cortas
+        if (longitud > 10) palabrasMasLargas += frecuencia;
+        if (longitud < 4) palabrasCortas += frecuencia;
+    }
+    
+    // Calcular mediana
+    Collections.sort(longitudes);
+    int medio = longitudes.size() / 2;
+    if (longitudes.size() % 2 == 0) {
+        medianaLongitudPalabra = (longitudes.get(medio - 1) + longitudes.get(medio)) / 2.0;
+    } else {
+        medianaLongitudPalabra = longitudes.get(medio);
+    }
+    
+    // Calcular desviación estándar
+    double sumaDiferencias = 0;
+    for (int longitud : longitudes) {
+        sumaDiferencias += Math.pow(longitud - promedioCaracteresPorPalabra, 2);
+    }
+    desviacionEstandarPalabra = Math.sqrt(sumaDiferencias / longitudes.size());
+}
 
     private void reiniciar() {
         totalLineas = 0; totalCaracteres = 0; totalPalabras = 0; totalParrafos = 0; totalOraciones = 0;
@@ -296,4 +506,20 @@ public class AnalizadorLogica {
     public int getCantidadHashtags() { return cantidadHashtags; }
     public int getCantidadIPs() { return cantidadIPs; }
     public String getIdiomaDetectado() { return idiomaDetectado; }
+    public String getLenguajeProgramacion() { return lenguajeProgramacion; }
+    public int getCantidadComentarios() { return cantidadComentarios; }
+    public int getCantidadFunciones() { return cantidadFunciones; }
+    public int getCantidadClases() { return cantidadClases; }
+    public int getCantidadImports() { return cantidadImports; }
+    public double getComplejidadCodigo() { return complejidadCodigo; }
+    public int getPalabrasRepetidas() { return palabrasRepetidas; }
+    public int getEspaciosMultiples() { return espaciosMultiples; }
+    public int getLineasVacias() { return lineasVacias; }
+    public double getDiversidadLexica() { return diversidadLexica; }
+    public double getMedianaLongitudPalabra() { return medianaLongitudPalabra; }
+    public double getDesviacionEstandarPalabra() { return desviacionEstandarPalabra; }
+    public int getPalabrasMasLargas() { return palabrasMasLargas; }
+    public int getPalabrasCortas() { return palabrasCortas; }
+    public int getPalabrasVacias() { return palabrasVacias; }
+    public double getRatioContenido() { return ratioContenido; }
 }
